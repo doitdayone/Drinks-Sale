@@ -1,0 +1,202 @@
+﻿@inject IHttpContextAccessor Accessor;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PRN221Project</title>
+    @*     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/PRN221Project.styles.css" asp-append-version="true" /> *@
+
+    <!-- font icons -->
+    <link rel="stylesheet" href="~/assets/vendors/themify-icons/css/themify-icons.css">
+
+    <!-- Bootstrap + Creative Studio main styles -->
+    <link rel="stylesheet" href="~/assets/css/creative-studio.css">
+    <link rel="stylesheet" href="~/assets/css/tai.css">
+
+</head>
+
+
+<body data-spy="scroll" data-target=".navbar" data-offset="40" id="home">
+    <!-- Page Navigation -->
+    <nav class="navbar custom-navbar navbar-expand-lg navbar-dark" data-spy="affix" data-offset-top="20" style=" z-index:10">
+        <div class="container">
+            <a class="navbar-brand" asp-page="/Index">
+                <img src="~/assets/imgs/logo.png" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, Creative studio Landing page">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-page="/Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-page="/Customer/Cart"><i class="ti-shopping-cart"></i> Cart</a>
+                    </li>
+
+
+
+                    @{
+                        if (Accessor.HttpContext.Session.GetString("FullName") != null)
+                        {
+                            <li>
+                                <a class="nav-link" asp-area="" asp-page="/Customer/UserList"> <i class="ti-notepad"></i>Orders</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link btn btn-primary btn-sm ml-lg-3" asp-area="" asp-page="/Customer/Profile"> <i class="ti-user"></i>@Accessor.HttpContext.Session.GetString("FullName")</a>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-area="" asp-page-handler="Logout" asp-page="/Index" method="post">
+                                    <input style="background:none;border:none" class="text-white btn btn-primary" type="submit" value="Logout" />
+                                </form>
+                            </li>
+
+                        }
+                        else
+                        {
+
+                            <a class="nav-link btn btn-primary btn-sm ml-lg-3"> Welcome</a>
+
+                        }
+                    }
+
+
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- End Of Page Navigation -->
+    <!-- Page Header -->
+    <header class="header">
+        <div class="overlay">
+            <h6 class="subtitle">Small Team With Big Ideas</h6>
+            <h1 class="title">PRN Drinks</h1>
+        </div>
+    </header>
+    <!-- End Of Page Header -->
+    @RenderBody()
+
+
+    <section class="has-bg-img py-0">
+        <div class="container">
+            <div class="footer">
+                <div class="footer-lists">
+                    <ul class="list">
+                        <li class="list-head">
+                            <h6 class="font-weight-bold">ABOUT US</h6>
+                        </li>
+                        <li class="list-body">
+                            <a href="#" class="logo">
+                                <img src="~/assets/imgs/logo.png" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, Creative studio Landing page">
+                                <h6>Creative Studio</h6>
+                            </a>
+                            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Beatae nobis fugit maxime deleniti minus optio accusamus, quam maiores explicabo sunt.</p>
+                            <p class="mt-3">
+                                Copyright <script>document.write(new Date().getFullYear())</script> &copy; <a class="d-inline text-primary" href="http://www.devcrud.com">DevCRUD</a>
+                            </p>
+                        </li>
+                    </ul>
+                    <ul class="list">
+                        <li class="list-head">
+                            <h6 class="font-weight-bold">USEFUL LINKS</h6>
+                        </li>
+                        <li class="list-body">
+                            <div class="row">
+                                <div class="col">
+                                    <a href="#about">About</a>
+                                    <a href="#service">Service</a>
+                                    <a href="#portfolio">Portfolio</a>
+                                    <a href="#testmonail">Testimonial</a>
+                                </div>
+                                <div class="col">
+                                    <a href="#team">Team</a>
+                                    <a href="#blog">Blog</a>
+                                    <a href="#">Faq</a>
+                                    <a href="#">Privacy Policy</a>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="list">
+                        <li class="list-head">
+                            <h6 class="font-weight-bold">CONTACT INFO</h6>
+                        </li>
+                        <li class="list-body">
+                            <p>Contact us and we'll get back to you within 24 hours.</p>
+                            <p><i class="ti-location-pin"></i> 12345 Fake ST NoWhere AB Country</p>
+                            <p><i class="ti-email"></i>  info@website.com</p>
+                            <div class="social-links">
+                                <a href="javascript:void(0)" class="link"><i class="ti-facebook"></i></a>
+                                <a href="javascript:void(0)" class="link"><i class="ti-twitter-alt"></i></a>
+                                <a href="javascript:void(0)" class="link"><i class="ti-google"></i></a>
+                                <a href="javascript:void(0)" class="link"><i class="ti-pinterest-alt"></i></a>
+                                <a href="javascript:void(0)" class="link"><i class="ti-instagram"></i></a>
+                                <a href="javascript:void(0)" class="link"><i class="ti-rss"></i></a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @*    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script> *@
+    <!-- core  -->
+    <script src="~/assets/vendors/jquery/jquery-3.4.1.js"></script>
+    <script src="~/assets/vendors/bootstrap/bootstrap.bundle.js"></script>
+
+    <!-- bootstrap affix -->
+    <script src="~/assets/vendors/bootstrap/bootstrap.affix.js"></script>
+
+    <!-- Creative Studio js -->
+    <script src="~/assets/js/creative-studio.js"></script>
+
+    <script>
+        // Get the modals
+        var loginModal = document.getElementById("loginModal");
+        var signUpModal = document.getElementById("signUpModal");
+
+        // Get the buttons that open the modals
+        var loginBtn = document.getElementById("loginBtn");
+        var signUpBtn = document.getElementById("signUpBtn");
+
+        // Get the <span> elements that close the modals
+        var closeButtons = document.getElementsByClassName("close");
+
+        // When the user clicks the button, open the modal
+        loginBtn.onclick = function () {
+            loginModal.style.display = "block";
+        }
+
+        signUpBtn.onclick = function () {
+            signUpModal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        for (var i = 0; i < closeButtons.length; i++) {
+            closeButtons[i].onclick = function () {
+                this.parentElement.parentElement.style.display = "none";
+            }
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function (event) {
+            if (event.target == loginModal) {
+                loginModal.style.display = "none";
+            }
+            if (event.target == signUpModal) {
+                signUpModal.style.display = "none";
+            }
+        }
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

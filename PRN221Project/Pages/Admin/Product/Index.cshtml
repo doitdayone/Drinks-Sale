@@ -1,0 +1,66 @@
+﻿@page
+@model Store.Pages.ProductMaster.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Pages/Admin/Ad_Layout.cshtml";
+}
+
+
+<h1 class="text-center">Your Products</h1>
+
+<div class="text-center mb-4">
+    <a asp-page="Create" class="btn btn-primary">Create New Product</a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Product[0].ProductName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Product[0].ProductDescription)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Product[0].Price)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Product[0].ProductImage)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Product[0].Category)
+                </th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Product)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProductName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ProductDescription)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Price)
+                    </td>
+                    <td>
+                        <img src="~/images/@item.ProductImage" width="100" height="200px" class="img-thumbnail">
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Category.CategoryName)
+                    </td>
+                    <td>
+                        <a asp-page="./Edit" asp-route-id="@item.ProductID" class="btn btn-sm btn-warning">Edit</a>
+                        <a asp-page="./Details" asp-route-id="@item.ProductID" class="btn btn-sm btn-info">Details</a>
+                        <a asp-page="./Delete" asp-route-id="@item.ProductID" class="btn btn-sm btn-danger">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

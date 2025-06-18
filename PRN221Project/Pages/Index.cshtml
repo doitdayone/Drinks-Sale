@@ -1,0 +1,228 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+@inject IHttpContextAccessor Accessor;
+
+<!-- Buttons Section -->
+<style>
+    .overlay-buttons {
+        position: absolute;
+        top: 63%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 2;
+        text-align: center;
+    }
+</style>
+
+@{
+    if (Accessor.HttpContext.Session.GetString("FullName") == null)
+    {
+        <div class="overlay-buttons">
+            <div class="buttons">
+                <a href="#service" class="btn btn-primary rounded w-lg btn-lg my-1" id="loginBtn">Login</a>
+                <a class="btn btn-outline-light rounded w-lg btn-lg my-1" id="signUpBtn">Sign up</a>
+            </div>
+        </div>
+    }
+}
+
+<div id="loginModal" class="modal" style="color:black; z-index:100">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Login</h2>
+        @if (TempData["LoginError"] != null)
+        {
+            <div class="alert alert-danger">@TempData["LoginError"]</div>
+        }
+        <form id="loginForm" method="post" asp-page-handler="Login">
+
+            <label asp-for="LoginDAO.Username">Username:</label>
+            <input type="text" id="username" asp-for="LoginDAO.Username" />
+            <span asp-validation-for="LoginDAO.Username" class="text-danger"></span>
+            <label asp-for="LoginDAO.Password">Password:</label>
+            <input type="password" id="password" asp-for="LoginDAO.Password" />
+            <span asp-validation-for="LoginDAO.Password" class="text-danger"></span>
+            <input type="submit" value="Login" class="btn btn-primary" />
+        </form>
+    </div>
+</div>
+
+<div id="signUpModal" class="modal" style="color:black; z-index:100">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Sign Up</h2>
+        @if (TempData["SignUpError"] != null)
+        {
+            <div class="alert alert-danger">@TempData["LoginError"]</div>
+        }
+        <form id="signUpForm" method="post" asp-page-handler="SignIn">
+
+            <label asp-for="SignInDAO.Username">Username:</label>
+            <input type="text" id="username" asp-for="SignInDAO.Username" />
+            <span asp-validation-for="SignInDAO.Username" class="text-danger"></span>
+            <label asp-for="SignInDAO.Password">Password:</label>
+            <input type="password" id="password" asp-for="SignInDAO.Password" />
+            <span asp-validation-for="SignInDAO.Password" class="text-danger"></span>
+            <label asp-for="SignInDAO.FullName">Full Name:</label>
+            <input type="text" id="fullname" asp-for="SignInDAO.FullName" />
+            <span asp-validation-for="SignInDAO.FullName" class="text-danger"></span>
+            <input type="submit" value="Sign Up" class="btn btn-primary" />
+        </form>
+    </div>
+</div>
+<div class="box text-center " style="position:relative; z-index:30">
+    <div class="box-item">
+        <form class="form-inline my-2 my-lg-0 d-flex justify-content-center w-100" method="get">
+            <input asp-for="SearchString" class="form-control mr-sm-2 w-50" placeholder="Search">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success" role="alert">
+        @TempData["SuccessMessage"]
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["ErrorMessage"]
+    </div>
+}
+<!-- Blog Section -->
+<section id="blog">
+    <div class="container">
+        <div class="row">
+            <form class="form-select" method="get">
+                <input type="hidden" asp-for="Category" value="@Model.Category" />
+                <select class="custom-select-lg" asp-for="SortOrder" onchange="this.form.submit()">
+                    <option value="Default">Thứ tự mặc định</option>
+                    <option value="LowToHigh">Giá từ thấp đến cao</option>
+                    <option value="HighToLow">Giá từ cao đến thấp</option>
+                    <option value="Sale">Giảm giá</option>
+                    <option value="Litte">Sắp hết hàng</option>
+                </select>
+            </form>
+        </div>
+        <h6 class="section-title mb-6 text-center">Our Blog</h6>
+
+        <div class="row">
+            @foreach (var item in Model.Products)
+            {
+                var discounts = item.Discounts.Where(d => d.EndAt >= DateTime.Now);
+                <div class="col-md-4" style="margin-bottom:5%">
+                    <div class="card blog-post my-4 my-sm-5 my-md-0">
+                        <img src="images/@item.ProductImage" alt="@item.ProductName" width="100%" height="275" object-fit="cover">
+                        <div class="card-body">
+                            <div class="details mb-3">
+                                <a><i class="ti-shopping-cart"></i> @item.Inventory.Sales</a>
+                                <a><i class="ti-dropbox"></i> @item.Inventory.QuantityInStock</a>
+                            </div>
+                            <h5 class="card-title">@item.ProductName</h5>
+                            @if (discounts.Count() > 0)
+                            {
+                                <p class="card-text text-muted"><del>@item.Price VNĐ</del></p>
+                                <p class="card-text text-primary">@IndexModel.CountDiscountPrice(item.Price, discounts.ToList()) VNĐ</p>
+                            }
+                            else
+                            {
+                                <p class="card-text text-primary">@item.Price VNĐ</p>
+                            }
+
+                            <div class="d-flex justify-content-between">
+                                <form class="form-inline" method="post" asp-page-handler="BuyNow">
+                                    <input type="hidden" name="ProductId" value="@item.ProductID" />
+                                    <input type="hidden" name="Quantity" value="1" />
+                                    <button type="submit" class="btn btn-danger mr-2" style="background:red">
+                                        <i class="ti-shopping-cart"> Buy Now</i>
+                                    </button>
+                                </form>
+                                <a asp-page="/Customer/ProductDetail" asp-route-id="@item.ProductID" class="btn btn-secondary ml-2">View Detail</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @* <div class="col-md-4">
+            <div class="card blog-post my-4 my-sm-5 my-md-0">
+            <img src="assets/imgs/blog-3.jpg" alt="Download free bootstrap 4 landing page, free boootstrap 4 templates, Download free bootstrap 4.1 landing page, free boootstrap 4.1.1 templates, Creative studio Landing page">
+            <div class="card-body">
+            <div class="details mb-3">
+            <a href="javascript:void(0)"><i class="ti-shopping-cart"></i> 123</a>
+            <a href="javascript:void(0)"><i class="ti-dropbox"></i> 123</a>
+            </div>
+            <h5 class="card-title">Possimus aliquam veniam</h5>
+            <p class="card-text text-muted"><del>2,000,000 VND</del></p>
+            <p class="card-text text-primary">1,000,000 VND</p>
+            <a href="javascript:void(0)" class="btn btn-primary justify-content-center"><i class="ti-shopping-cart"> Buy Now</i></a>
+            <a href="javascript:void(0)" class="btn btn-secondary justify-content-center">View Detail</a>
+            </div>
+            </div>
+            </div> *@
+        </div>
+        <div class="py-5"></div>
+        <div>
+            <nav aria-label="Page navigation example">
+                <ul class="pagination pagination-lg justify-content-center">
+                    @if (Model.Products.HasPreviousPage())
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Page(null, new { PageIndex = Model.PageIndex - 1 })">
+                                <i class="ti-angle-double-left"></i>
+                            </a>
+                        </li>
+                    }
+                    @for (int i = 1; i <= Model.Products.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.PageIndex+1 ? "active" : "")">
+                            <a class="page-link" href="@Url.Page(null, new { PageIndex = i-1 })">@i</a>
+                        </li>
+                    }
+                    @if (Model.Products.HasNextPage())
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Page(null, new { PageIndex = Model.PageIndex + 1 })">
+                                <i class="ti-angle-double-right"></i>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
+
+        <div class="py-5"></div>
+        <div class="container">
+            <div class="row">
+                <div class="card col-md-4 offset-md-8">
+
+                    <form method="get" class="card-body">
+                        <h5 class="font-weight-bold">Category----------</h5>
+                        <input type="hidden" asp-for="SortOrder" value="@Model.SortOrder" />
+                        <select class="dropdown-item-text" asp-for="Category" asp-items="ViewBag.CategoryID" onchange="this.form.submit()">
+                            <option value="0">All</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+        </div>
+</section>
+<!-- End of Blog Section -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var openModal = '@Model.Open';
+            if (openModal === "login") {
+                document.getElementById('loginModal').style.display = 'block';
+            } else if (openModal === "signIn") {
+                document.getElementById('signUpModal').style.display = 'block';
+            }
+        });
+    </script>
+}

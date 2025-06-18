@@ -1,0 +1,111 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Sales Statistics";
+    Layout = "~/Pages/Admin/Ad_Layout.cshtml";
+}
+
+@using Newtonsoft.Json
+@{
+    int currentYear = DateTime.Now.Year;
+    var years = Enumerable.Range(currentYear - 5, 6).ToList();
+}
+<div class="container">
+<h2>@ViewData["Title"]</h2>
+    <div class="col-2">
+        <form method="get">
+            <label for="year">Select Year:</label>
+            <select asp-for="SelectedYear" id="year" name="year" onchange="this.form.submit()">
+                @foreach (var year in years)
+                {
+                    <option value="@year">@year</option>
+                }
+            </select>
+        </form>
+    </div>
+    
+    <canvas id="salesChart" width="400" height="200"></canvas>
+</div>
+
+
+<script>
+    var salesData = @Html.Raw(Model.SalesDataJson);
+    console.log(salesData);
+</script>
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.js"></script>
+
+<script src="~/lib/microsoft/signalr/dist/browser/signalr.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/5.0.9/signalr.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<canvas id="salesChart" width="400" height="200"></canvas>
+
+<script>
+    let salesChart = null;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+
+        // Initial chart creation
+        var initialSalesData = @Html.Raw(Model.SalesDataJson);
+        updateChart(initialSalesData);
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/salesHub")
+            .build();
+
+        connection.on("ReceiveSalesDataUpdate", function () {
+            fetch('/Admin/Statistic/GetSalesData')
+                .then(response => response.json())
+                .then(data => {
+                    updateChart(data);
+                });
+        });
+
+        connection.start().catch(err => console.error(err.toString()));
+
+        // Fetch initial data and draw chart
+        fetch('/Admin/Statistic/GetSalesData')
+            .then(response => response.json())
+            .then(data => {
+                updateChart(data);
+            });
+    });
+
+    function updateChart(data) {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+
+        // Destroy the existing chart if it exists
+        if (salesChart) {
+            salesChart.destroy();
+        }
+
+        // Create a new chart
+        salesChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Total Sales',
+                    data: data.data,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+</script>
+
+
+
+    

@@ -1,0 +1,82 @@
+﻿@page
+@model PRN221Project.Pages.Customer.CartModel
+@{
+    ViewData["Title"] = "Shopping Cart";
+    var cultureInfo = new System.Globalization.CultureInfo("vi-VN");
+}
+
+<div class="container card mt-5">
+    <h2>Shopping Cart</h2>
+    <div class="row">
+        <div class="col-md-8">
+            <form method="post">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.CartItems.Count; i++)
+                        {
+                            <tr id="row-@Model.CartItems[i].ProductId">
+                                <td>@Model.CartItems[i].ProductName</td>
+                                <td>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity('@Model.CartItems[i].ProductId', -1)">-</button>
+                                        </div>
+                                        <input type="text" class="form-control text-center" id="quantity-@Model.CartItems[i].ProductId" value="@Model.CartItems[i].Quantity" readonly>
+                                        <input type="hidden" name="CartItems[@i].Quantity" id="hidden-quantity-@Model.CartItems[i].ProductId" value="@Model.CartItems[i].Quantity">
+                                        <input type="hidden" name="CartItems[@i].ProductId" value="@Model.CartItems[i].ProductId">
+                                        <input type="hidden" name="CartItems[@i].ProductName" value="@Model.CartItems[i].ProductName">
+                                        <input type="hidden" name="CartItems[@i].Price" value="@Model.CartItems[i].Price">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="updateQuantity('@Model.CartItems[i].ProductId', 1)">+</button>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td data-price="@Model.CartItems[i].Price">@Model.CartItems[i].Price.ToString("C", cultureInfo)</td>
+                                <td id="total-@Model.CartItems[i].ProductId">@((Model.CartItems[i].Price * Model.CartItems[i].Quantity).ToString("C", cultureInfo))</td>
+                                <td>
+                                    <button class="btn btn-danger" type="button" onclick="removeItem('@Model.CartItems[i].ProductId')">Remove</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <button class="btn btn-primary" type="submit">Order</button>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="py-5"></div>
+@section Scripts {
+    <script>
+        function updateQuantity(productId, change) {
+            var quantityInput = document.getElementById('quantity-' + productId);
+            var hiddenQuantityInput = document.getElementById('hidden-quantity-' + productId);
+            var quantity = parseInt(quantityInput.value);
+            var newQuantity = quantity + change;
+            if (newQuantity >= 1) {
+                quantityInput.value = newQuantity;
+                hiddenQuantityInput.value = newQuantity;
+
+                // Cập nhật total
+                var priceElement = document.querySelector('#row-' + productId + ' td[data-price]');
+                var price = parseFloat(priceElement.getAttribute('data-price'));
+                var totalElement = document.getElementById('total-' + productId);
+                totalElement.innerText = (price * newQuantity).toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+            }
+        }
+
+        function removeItem(productId) {
+            // Xử lý việc xóa sản phẩm khỏi giỏ hàng (bạn có thể gửi yêu cầu tới server để cập nhật)
+            document.getElementById('row-' + productId).remove();
+        }
+    </script>
+}

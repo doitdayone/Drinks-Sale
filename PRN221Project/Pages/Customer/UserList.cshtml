@@ -1,0 +1,42 @@
+﻿@page
+@model Store.Pages.OrderMaster.UserListModel
+
+@{
+    ViewData["Title"] = "UserList";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <h1 class="mb-4">User List</h1>
+
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="thead-dark">
+                <tr>
+                    <th>@Html.DisplayNameFor(model => model.Order[0].CreateAt)</th>
+                    <th>@Html.DisplayNameFor(model => model.Order[0].Amount)</th>
+                    <th>@Html.DisplayNameFor(model => model.Order[0].Tax)</th>
+                    <th>@Html.DisplayNameFor(model => model.Order[0].Customer)</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Order)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.CreateAt)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Amount)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Tax)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Customer.FullName)</td>
+                        <td>
+                           
+                            <a class="btn btn-sm btn-secondary" asp-page="./UserListDetail" asp-route-id="@item.OrderID">Details</a>
+                           
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

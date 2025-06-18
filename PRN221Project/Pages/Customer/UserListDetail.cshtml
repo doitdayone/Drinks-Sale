@@ -1,0 +1,44 @@
+﻿@page "{id:int}"
+@model Store.Pages.OrderMaster.UserListDetailModel
+@{
+    ViewData["Title"] = "Order Details";
+    Layout = "~/Pages/Shared/_Layout.cshtml";
+    var cultureInfo = new System.Globalization.CultureInfo("vi-VN");
+}
+
+<div class="container card mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h3>Order Details for Order #@Model.Order.OrderID</h3>
+            <p>
+                <strong>Customer:</strong> @Model.Order.Customer.FullName <br />
+                <strong>Address:</strong> @Model.Order.Customer.Address <br />
+                <strong>Order Date:</strong> @Model.Order.CreateAt.ToString("dd/MM/yyyy") <br />
+                <strong>Total Amount:</strong> @Model.Order.Amount.ToString("C", cultureInfo) <br />
+                <strong>Tax:</strong> @Model.Order.Tax.ToString("C", cultureInfo) <br />
+            </p>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderDetails)
+                    {
+                        <tr>
+                            <td>@item.Product.ProductName</td>
+                            <td>@item.Quantity</td>
+                            <td>@item.Price.ToString("C", cultureInfo)</td>
+                            <td>@((item.Price * item.Quantity).ToString("C", cultureInfo))</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <a asp-page="./UserList" class="btn btn-primary">Back to Order List</a>
+        </div>
+    </div>
+</div>

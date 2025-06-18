@@ -1,0 +1,102 @@
+﻿@page
+@model PRN221Project.Pages.Customer.ProductDetailModel
+@{
+}
+<div class="py-5"></div>
+<div class="card container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <img src="~/assets/imgs/blog-1.jpg" class="img-fluid" alt="Product Image">
+        </div>
+        <div class="col-md-6">
+            <h1 class="display-4">@Model.Product.ProductName</h1>
+            <p class="lead">@Model.Product.ProductDescription</p>
+            @if (Model.Product.Discounts.Any(d => d.EndAt >= DateTime.Now))
+            {
+                var currentDiscount = Model.Product.Discounts.First(d => d.EndAt >= DateTime.Now);
+                <p class="card-text text-muted"><del>@Model.Product.Price VNĐ</del></p>
+                <p class="card-text text-primary">@(Model.Product.Price - (Model.Product.Price * currentDiscount.DiscountPercent / 100)) VNĐ</p>
+            }
+            else
+            {
+                <p class="card-text text-primary">@Model.Product.Price VNĐ</p>
+            }
+            <form method="post">
+                <div class="input-group mb-3" style="max-width: 200px;">
+                    <input type="hidden" asp-for="CartItem.ProductId" value="@Model.Product.ProductID"/>
+                    <input type="hidden" asp-for="CartItem.ProductName" value="@Model.Product.ProductName" />
+                    <input type="hidden" asp-for="CartItem.Price" value="@IndexModel.CountDiscountPrice(Model.Product.Price, Model.Product.Discounts.ToList())" />
+                    <div class="input-group-prepend">
+                        <button class="btn btn-outline-secondary" type="button" id="button-decrement">-</button>
+                    </div>
+                    <input type="text" class="form-control text-center" id="quantity" value="1" aria-describedby="button-addon1" asp-for="CartItem.Quantity">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button" id="button-increment">+</button>
+                    </div>
+                </div>
+            
+            <button type="submit" class="btn btn-primary" id="add-to-cart"><i class="ti-shopping-cart"></i> Add to Cart</button>
+            </form>
+            <div class="py-5"></div>
+        </div>
+    </div>
+</div>
+<div class="py-5"></div>
+<section id="blog">
+    <div class="container">
+
+        <h6 class="section-title mb-6 text-center">Sản phẩm liên quan</h6>
+
+        <div class="row">
+            @foreach (var relatedProduct in Model.RelatedProducts)
+            {
+                <div class="col-md-4">
+                    <div class="card blog-post my-4 my-sm-5 my-md-0">
+                        <img src="~/assets/imgs/blog-1.jpg" alt="Product Image">
+                        <div class="card-body">
+                            <div class="details mb-3">
+                                <a><i class="ti-shopping-cart"></i> @relatedProduct.Inventory.Sales</a>
+                                <a><i class="ti-dropbox"></i> @relatedProduct.Inventory.QuantityInStock</a>
+                            </div>
+                            <h5 class="card-title">@relatedProduct.ProductName</h5>
+                            @if (relatedProduct.Discounts.Any(d => d.EndAt >= DateTime.Now))
+                            {
+                                var discount = relatedProduct.Discounts.First(d => d.EndAt >= DateTime.Now);
+                                <p class="card-text text-muted"><del>@relatedProduct.Price VNĐ</del></p>
+                                <p class="card-text text-primary">@(relatedProduct.Price - (relatedProduct.Price * discount.DiscountPercent / 100)) VNĐ</p>
+                            }
+                            else
+                            {
+                                <p class="card-text text-primary">@relatedProduct.Price VNĐ</p>
+                            }
+                            <a asp-page="/ProductMaster/Details" asp-route-id="@relatedProduct.ProductID" class="btn btn-secondary justify-content-center">View Detail</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="py-5"></div>
+
+</section>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('#button-increment').click(function () {
+            var quantity = parseInt($('#quantity').val());
+            $('#quantity').val(quantity + 1);
+        });
+
+        $('#button-decrement').click(function () {
+            var quantity = parseInt($('#quantity').val());
+            if (quantity > 1) {
+                $('#quantity').val(quantity - 1);
+            }
+        });
+
+        $('#add-to-cart').click(function () {
+            var quantity = $('#quantity').val();
+            alert(quantity + ' items added to cart.');
+        });
+    });
+</script>
